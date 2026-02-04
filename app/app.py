@@ -1,6 +1,12 @@
 from flask import Flask, render_template
 import pandas as pd
 
+from relationship_analysis import (
+    employment_rate_vs_salary,
+    ft_perm_vs_salary,
+    load_cleaned_data,
+)
+
 app = Flask(__name__, template_folder='../templates')
 
 # Define a function to load different CSV files for each route (if needed)
@@ -42,6 +48,28 @@ def function5():
     # If function5 needs different data, load a different CSV
     function5_data = load_csv('../function5_data.csv')
     return render_template('index.html', data=function5_data.to_dict(orient='records'), active_tab='tab5')
+
+@app.route('/function6')
+def function6():
+    df = load_cleaned_data('../cleaned.csv')
+    rel, corr = employment_rate_vs_salary(df)
+    return render_template(
+        'index.html',
+        data=rel.to_dict(orient='records'),
+        active_tab='tab6',
+        correlation=corr,
+    )
+
+@app.route('/function7')
+def function7():
+    df = load_cleaned_data('../cleaned.csv')
+    rel, corr = ft_perm_vs_salary(df)
+    return render_template(
+        'index.html',
+        data=rel.to_dict(orient='records'),
+        active_tab='tab7',
+        correlation=corr,
+    )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
